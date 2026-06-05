@@ -2,7 +2,7 @@
 import '@babel/polyfill';
 import { cuteToast } from './cute/cute-alert';
 import { forgotPassword, login, logout, resetPassword, signup } from './login';
-import { displayMap, ss } from './mapbox';
+import { displayMap, initTourMap } from './mapbox';
 import { addReview, deleteReview, updateReview, colorStars } from './review';
 import { bookTour } from './stripe';
 import { updateSettings } from './updateUser';
@@ -60,7 +60,110 @@ if (signupForm) {
 }
 
 if (tourForm) {
-  ss();
+  fetchGuides();
+  initGuideSelector();
+
+  let tourMap = null;
+  try { tourMap = initTourMap(); } catch (e) { console.error('Map init error:', e); }
+
+  const tourLocations = [];
+  let locStartIndex = -1;
+
+  function syncTourLocations() {
+    document.getElementById('locations-data').value = JSON.stringify(tourLocations);
+    renderTourLocationsList();
+  }
+
+  function renderTourLocationsList() {
+    const container = document.getElementById('locations-list');
+    if (!container) return;
+    if (tourLocations.length === 0) {
+      container.innerHTML = '<p class="locations-empty">No locations added yet</p>';
+      return;
+    }
+    container.innerHTML = tourLocations.map((loc, i) => `
+      <div class="location-item ${i === locStartIndex ? 'location-item--start' : ''}">
+        <span class="location-item__info">
+          ${i === locStartIndex ? '🚩' : '📍'}
+          ${loc.description || 'Location ' + (i + 1)}
+          <small>Day ${loc.day} (${loc.coordinates[0].toFixed(4)}, ${loc.coordinates[1].toFixed(4)})</small>
+        </span>
+        <div class="location-item__actions">
+          <button type="button" class="btn btn--small btn--green btn--set-start" data-index="${i}">Start</button>
+          <button type="button" class="btn btn--small btn--black btn--remove-loc" data-index="${i}">Remove</button>
+        </div>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.btn--remove-loc').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.index);
+        tourLocations.splice(idx, 1);
+        if (locStartIndex === idx) locStartIndex = -1;
+        else if (locStartIndex > idx) locStartIndex--;
+        if (tourMap && tourMap.clearMapMarkers) tourMap.clearMapMarkers();
+        tourLocations.forEach((l) => {
+          if (tourMap && tourMap.addMarkerToMap) tourMap.addMarkerToMap(l.coordinates[0], l.coordinates[1], l.description, l.day);
+        });
+        syncTourLocations();
+      });
+    });
+
+    container.querySelectorAll('.btn--set-start').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.index);
+        locStartIndex = idx;
+        const loc = tourLocations[idx];
+        document.getElementById('startLocationCoordinates').value = loc.coordinates.join(',');
+        syncTourLocations();
+      });
+    });
+  }
+
+  function showLocationForm() {
+    document.getElementById('loc-desc').value = '';
+    document.getElementById('loc-day').value = tourLocations.length + 1;
+    document.getElementById('loc-lng').value = '';
+    document.getElementById('loc-lat').value = '';
+    document.getElementById('location-form-wrapper').style.display = 'block';
+    if (tourMap && tourMap.startPicking) tourMap.startPicking();
+  }
+
+  function hideLocationForm() {
+    document.getElementById('location-form-wrapper').style.display = 'none';
+  }
+
+  document.getElementById('add-location-btn')?.addEventListener('click', showLocationForm);
+
+  document.getElementById('location-save')?.addEventListener('click', () => {
+    const desc = document.getElementById('loc-desc').value.trim();
+    const day = parseInt(document.getElementById('loc-day').value) || tourLocations.length + 1;
+    const lng = parseFloat(document.getElementById('loc-lng').value);
+    const lat = parseFloat(document.getElementById('loc-lat').value);
+    if (!desc) { cuteToast({ type: 'error', title: 'Error', message: 'Please enter a description', timer: 2000 }); return; }
+    if (isNaN(lng) || isNaN(lat)) { cuteToast({ type: 'error', title: 'Error', message: 'Please click on the map to select coordinates', timer: 2000 }); return; }
+
+    tourLocations.push({
+      type: 'Point',
+      coordinates: [lng, lat],
+      description: desc,
+      day,
+    });
+
+    if (tourMap && tourMap.addMarkerToMap) tourMap.addMarkerToMap(lng, lat, desc, day);
+
+    if (tourLocations.length === 1) {
+      locStartIndex = 0;
+      document.getElementById('startLocationCoordinates').value = `${lng}, ${lat}`;
+    }
+
+    syncTourLocations();
+    hideLocationForm();
+    cuteToast({ type: 'success', title: 'Location added', message: 'You can add another location', timer: 1500 });
+  });
+
+  document.getElementById('location-cancel')?.addEventListener('click', hideLocationForm);
+
   tourForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -70,55 +173,27 @@ if (tourForm) {
       .get('startDates')
       .split(',')
       .map((date) => new Date(date.trim()).toISOString());
-    const startLocationDescription = data.get('startLocationDescription');
-    const startLocationCoordinates = data
-      .get('startLocationCoordinates')
-      .split(',')
-      .map((coord) => parseFloat(coord.trim()));
-
     data.set('startDates', JSON.stringify(startDates));
 
-    data.set(
-      'startLocation',
-      JSON.stringify({
-        type: 'Point',
-        coordinates: startLocationCoordinates,
-        description: startLocationDescription,
-      })
-    );
+    const guides = JSON.parse(document.getElementById('guides-data').value || '[]');
+    data.set('guides', JSON.stringify(guides));
 
-    data.set(
-      'locations',
-      JSON.stringify([
-        {
+    const startCoordStr = document.getElementById('startLocationCoordinates').value;
+    const startCoords = startCoordStr.split(',').map((c) => parseFloat(c.trim()));
+    if (startCoords.length === 2 && !isNaN(startCoords[0])) {
+      const startLoc = tourLocations.find(
+        (l) => l.coordinates[0] === startCoords[0] && l.coordinates[1] === startCoords[1]
+      );
+      data.set(
+        'startLocation',
+        JSON.stringify({
           type: 'Point',
-          coordinates: [
-            startLocationCoordinates[0] - 1,
-            startLocationCoordinates[1] - 1,
-          ],
-          description: startLocationDescription,
-          day: 1,
-        },
-        {
-          type: 'Point',
-          coordinates: [
-            startLocationCoordinates[0] - 0.5,
-            startLocationCoordinates[1] - 0.5,
-          ],
-          description: startLocationDescription,
-          day: 2,
-        },
-        {
-          type: 'Point',
-          coordinates: [
-            startLocationCoordinates[0] + 0.5,
-            startLocationCoordinates[1] + 0.5,
-          ],
-          description: startLocationDescription,
-          day: 3,
-        },
-      ])
-    );
+          coordinates: startCoords,
+          description: startLoc ? startLoc.description : 'Starting point',
+        })
+      );
+    }
+
     addTour(data);
   });
 }
@@ -309,5 +384,99 @@ if (alert) {
     title: 'successful booking',
     message: alert,
     timer: 7000,
+  });
+}
+
+const allGuides = [];
+
+async function fetchGuides() {
+  try {
+    const res = await fetch('/api/v1/users/guides');
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    const json = await res.json();
+    const guides = json.data.data;
+    allGuides.push(...guides);
+    const selector = document.getElementById('guide-selector');
+    guides.forEach((guide) => {
+      const opt = document.createElement('option');
+      opt.value = guide._id;
+      opt.textContent = `${guide.name} (${guide.role})`;
+      selector.appendChild(opt);
+    });
+  } catch (err) {
+    const msg = err.message || 'Failed to load guides';
+    cuteToast({ type: 'error', title: 'Error', message: msg, timer: 3000 });
+  }
+}
+
+function renderSelectedGuides() {
+  const container = document.getElementById('selected-guides');
+  const guidesData = document.getElementById('guides-data');
+  const selectedIds = JSON.parse(guidesData.value || '[]');
+
+  if (selectedIds.length === 0) {
+    container.innerHTML = '<p class="locations-empty">No guides selected</p>';
+    return;
+  }
+
+  container.innerHTML = selectedIds
+    .map((id) => {
+      const guide = allGuides.find((g) => g._id === id);
+      if (!guide) return '';
+      return `
+        <div class="location-item">
+          <span class="location-item__info">${guide.name} (${guide.role})</span>
+          <button type="button" class="btn btn--small btn--black remove-guide" data-id="${id}">Remove</button>
+        </div>
+      `;
+    })
+    .join('');
+
+  container.querySelectorAll('.remove-guide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const current = JSON.parse(guidesData.value || '[]');
+      guidesData.value = JSON.stringify(current.filter((gid) => gid !== id));
+      renderSelectedGuides();
+    });
+  });
+}
+
+function initGuideSelector() {
+  const addGuideBtn = document.getElementById('add-guide-btn');
+  const guideSelector = document.getElementById('guide-selector');
+  const guideSelectWrapper = document.getElementById('guide-select-wrapper');
+
+  if (!addGuideBtn || !guideSelector || !guideSelectWrapper) {
+    console.error('Guide selector elements not found');
+    return;
+  }
+
+  addGuideBtn.addEventListener('click', () => {
+    guideSelectWrapper.style.display = 'block';
+    guideSelector.focus();
+  });
+
+  guideSelector.addEventListener('change', () => {
+    const id = guideSelector.value;
+    if (!id) return;
+    const guidesData = document.getElementById('guides-data');
+    const current = JSON.parse(guidesData.value || '[]');
+    if (!current.includes(id)) {
+      current.push(id);
+      guidesData.value = JSON.stringify(current);
+    }
+    guideSelector.value = '';
+    guideSelectWrapper.style.display = 'none';
+    renderSelectedGuides();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (
+      !e.target.closest('#guide-select-wrapper') &&
+      !e.target.closest('#add-guide-btn')
+    ) {
+      guideSelectWrapper.style.display = 'none';
+    }
   });
 }

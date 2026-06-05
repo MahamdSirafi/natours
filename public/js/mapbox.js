@@ -36,40 +36,68 @@ export const displayMap = (locations) => {
   });
 };
 
-export const ss = () => {
-  // Set your Mapbox access token
+export const initTourMap = () => {
   mapboxgl.accessToken =
     'pk.eyJ1IjoiYmFoYWEyMDAxIiwiYSI6ImNsZXBqNncxaTA5NW4zem1qYWdjaTU0NWwifQ.EnFn3UivyEp2f9iXlWyr9w';
 
-  // Initialize the Mapbox map
   const map = new mapboxgl.Map({
-    container: 'map-container', // ID of the map container
+    container: 'map-container',
     style: 'mapbox://styles/bahaa2001/clevac25y000901p6izu54sva',
-    center: [37.1357, 36.201], // Default center [lng, lat]
-    zoom: 9, // Default zoom level
-    interactive: true, // Enable map interactions
-    maxBounds: [
-      [-180, -90], // Southwest coordinates
-      [180, 90], // Northeast coordinates
-    ], // Constrain the map to the specified bounds
+    center: [37.1357, 36.201],
+    zoom: 9,
+    interactive: true,
+    maxBounds: [[-180, -90], [180, 90]],
   });
 
-  // Ensure the map resizes properly when the window is resized
-  window.addEventListener('resize', () => {
-    map.resize();
-  });
+  window.addEventListener('resize', () => { map.resize(); });
 
-  // Handle map click events
-  map.on('click', (event) => {
-    const coordinates = event.lngLat;
-    const popup = new mapboxgl.Popup()
-      .setLngLat(coordinates)
-      .setText(`${coordinates.lng.toFixed(4)}, ${coordinates.lat.toFixed(4)}`)
+  const markers = [];
+  let isPicking = false;
+
+  function exitPickingMode() {
+    isPicking = false;
+    try { map.getCanvas().style.cursor = ''; } catch (e) { /* map might not be ready */ }
+    const instr = document.getElementById('map-instruction');
+    if (instr) instr.style.display = 'none';
+  }
+
+  function addMarkerToMap(lng, lat, description, day) {
+    const el = document.createElement('div');
+    el.className = 'marker';
+    const marker = new mapboxgl.Marker({ element: el })
+      .setLngLat([lng, lat])
+      .setPopup(new mapboxgl.Popup().setHTML(`<b>Day ${day}</b><br>${description || ''}`))
       .addTo(map);
+    markers.push(marker);
+  }
 
-    // Update the form field with the selected coordinates
-    document.querySelector(
-      '#startLocationCoordinates'
-    ).value = `${coordinates.lng.toFixed(4)}, ${coordinates.lat.toFixed(4)}`;
+  function clearMapMarkers() {
+    markers.forEach((m) => m.remove());
+    markers.length = 0;
+  }
+
+  map.on('click', (e) => {
+    if (!isPicking) return;
+    const { lng, lat } = e.lngLat;
+    const lngField = document.getElementById('loc-lng');
+    const latField = document.getElementById('loc-lat');
+    if (lngField && latField) {
+      lngField.value = lng.toFixed(4);
+      latField.value = lat.toFixed(4);
+    }
+    exitPickingMode();
   });
+
+  return {
+    startPicking() {
+      if (isPicking) return;
+      isPicking = true;
+      try { map.getCanvas().style.cursor = 'crosshair'; } catch (e) { /* map might not be ready */ }
+      const instr = document.getElementById('map-instruction');
+      if (instr) instr.style.display = 'block';
+    },
+    isActive: true,
+    addMarkerToMap,
+    clearMapMarkers,
+  };
 };

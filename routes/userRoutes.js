@@ -20,6 +20,7 @@ import {
   getMe,
   uploadUserPhoto,
   resizeUserImage,
+  getGuides,
 } from '../controllers/userController.js';
 import bookingRouter from './bookingRoutes.js';
 
@@ -35,6 +36,7 @@ router.route('/resetPassword/:token').get(isTokenValid).patch(resetPassword);
 
 //Protect all routes after this middleware
 router.use(protect);
+router.route('/guides').get(getGuides);
 router.route('/me').get(getMe, getUser);
 router.route('/updateMyPassword').patch(updateMyPassword);
 router.route('/updateMe').patch(uploadUserPhoto, resizeUserImage, updateMe);

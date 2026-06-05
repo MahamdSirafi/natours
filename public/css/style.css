@@ -1558,3 +1558,85 @@ body {
     height: 300px; /* Adjust height for smaller screens */
   }
 }
+
+.locations-list {
+  margin-top: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.location-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1.2rem;
+  margin-bottom: 0.5rem;
+  background: #fff;
+  border-radius: 5px;
+  border: 1px solid #eee;
+  transition: all 0.2s;
+}
+
+.location-item:hover {
+  border-color: #55c57a;
+}
+
+.location-item--start {
+  border-color: #55c57a;
+  background: #f0fdf4;
+}
+
+.location-item__info {
+  font-size: 1.3rem;
+  color: #555;
+}
+
+.location-item__info small {
+  color: #999;
+  margin-left: 0.5rem;
+}
+
+.location-item__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.locations-empty {
+  font-size: 1.3rem;
+  color: #bbb;
+  text-align: center;
+  padding: 2rem;
+  border: 2px dashed #ddd;
+  border-radius: 5px;
+}
+
+.map-popup-form {
+  padding: 0.5rem;
+  min-width: 200px;
+}
+
+.map-popup-form h4 {
+  margin-bottom: 0.8rem;
+  font-size: 1.4rem;
+  color: #333;
+}
+
+#guide-select-wrapper {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+#add-guide-btn,
+#add-location-btn {
+  margin-top: 0.8rem;
+}
+
+#selected-guides {
+  margin-bottom: 0.5rem;
+}
+
+.form__input[readonly] {
+  background-color: #f7f7f7;
+  cursor: pointer;
+}

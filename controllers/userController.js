@@ -1,8 +1,8 @@
 ﻿import multer from 'multer';
 import sharp from 'sharp';
 import User from '../models/userModel.js';
-import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
 import { deleteOne, getAll, getOne, updateOne } from './handlerFactory.js';
 
 const multerStorage = multer.memoryStorage();
@@ -84,3 +84,10 @@ export const getUser = getOne(User);
 //Do not update password with this
 export const updateUser = updateOne(User);
 export const deleteUser = deleteOne(User);
+
+export const getGuides = catchAsync(async (req, res, next) => {
+  const guides = await User.find({
+    role: { $in: ['guide', 'lead-guide'] },
+  }).select('name email role photo');
+  res.status(200).json({ status: 'success', data: { data: guides } });
+});

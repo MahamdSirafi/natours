@@ -35,10 +35,9 @@ export const resizeTourImages = catchAsync(async (req, res, next) => {
   if (req.body.startLocation) {
     req.body.startLocation = JSON.parse(req.body.startLocation);
   }
-
-  const tour = await Tour.findOne().sort({ createdAt: 1 });
-
-  req.body.guides = tour.guides;
+  if (req.body.guides) {
+    req.body.guides = JSON.parse(req.body.guides);
+  }
   if (
     !req.files.imageCover ||
     !req.files.image1 ||

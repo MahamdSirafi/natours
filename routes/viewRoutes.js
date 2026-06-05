@@ -33,7 +33,7 @@ router.get('/top-5-cheap', aliasTopTours, getOverview);
 
 router.get('/tour-stats', getTourStats);
 
-router.get('/new-tour', getTourForm);
+router.get('/new-tour', protect, getTourForm);
 
 router.get('/login', getLoginForm);
 
