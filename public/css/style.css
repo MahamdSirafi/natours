@@ -1095,11 +1095,11 @@ body {
 }
 
 .card-container {
-  max-width: 120rem;
+  max-width: 140rem;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 7rem;
+  grid-gap: 2rem;
 }
 
 .card {

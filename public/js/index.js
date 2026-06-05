@@ -345,15 +345,15 @@ if (reviewMores) {
   });
 }
 
-document.querySelectorAll('.btn--delete-tour').forEach((btn) => {
-  btn.addEventListener('click', async (e) => {
-    e.stopPropagation();
-    const tourCard = btn.closest('.card');
-    const tourId = btn.dataset.id;
-    if (!confirm('Delete this tour permanently?')) return;
-    await deleteTour(tourId);
-    if (tourCard) tourCard.remove();
-  });
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.btn--delete-tour');
+  if (!btn) return;
+  e.stopPropagation();
+  const tourCard = btn.closest('.card');
+  const tourId = btn.dataset.id;
+  if (!confirm('Delete this tour permanently?')) return;
+  await deleteTour(tourId);
+  if (tourCard) tourCard.remove();
 });
 
 const alert = document.body.dataset.alert;

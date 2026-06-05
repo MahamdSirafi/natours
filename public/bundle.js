@@ -39084,16 +39084,16 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       });
     });
   }
-  document.querySelectorAll(".btn--delete-tour").forEach((btn) => {
-    btn.addEventListener("click", (e) => __async(null, null, function* () {
-      e.stopPropagation();
-      const tourCard = btn.closest(".card");
-      const tourId = btn.dataset.id;
-      if (!confirm("Delete this tour permanently?")) return;
-      yield deleteTour(tourId);
-      if (tourCard) tourCard.remove();
-    }));
-  });
+  document.addEventListener("click", (e) => __async(null, null, function* () {
+    const btn = e.target.closest(".btn--delete-tour");
+    if (!btn) return;
+    e.stopPropagation();
+    const tourCard = btn.closest(".card");
+    const tourId = btn.dataset.id;
+    if (!confirm("Delete this tour permanently?")) return;
+    yield deleteTour(tourId);
+    if (tourCard) tourCard.remove();
+  }));
   var alert = document.body.dataset.alert;
   if (alert) {
     cuteToast({
