@@ -1,0 +1,76 @@
+{
+  "name": "natours",
+  "version": "1.0.0",
+  "description": "learning node, express and mongoDB",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "start:dev": "nodemon server.js",
+    "start:prod": "NODE_ENV=production node server.js",
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/ --out-file bundle.js",
+    "build:js": "parcel build ./public/js/index.js --out-dir ./public/ --out-file bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bahaa-alden/natours.git"
+  },
+  "author": "bahaa alden abdo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bahaa-alden/natours/issues"
+  },
+  "homepage": "https://github.com/bahaa-alden/natours#readme",
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "@types/mongoose": "^5.11.97",
+    "axios": "^1.3.4",
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "cookie-session": "^2.0.0",
+    "cors": "^2.8.5",
+    "csurf": "^1.11.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^6.7.0",
+    "express-session": "^1.17.3",
+    "fs-es6": "^0.0.2",
+    "helmet": "^6.0.1",
+    "hpp": "^0.2.3",
+    "html-to-text": "^9.0.4",
+    "jsonwebtoken": "^9.0.0",
+    "mapbox-gl": "^2.13.0",
+    "mongoose": "^5.13.15",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.8.0",
+    "nodemon": "^2.0.20",
+    "pug": "^3.0.2",
+    "sharp": "^0.33.4",
+    "slugify": "^1.6.5",
+    "stripe": "^11.14.0",
+    "util": "^0.12.5",
+    "validator": "^13.7.0",
+    "xss-clean": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.14",
+    "@types/morgan": "^1.9.3",
+    "eslint": "^8.34.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "parcel-bundler": "^1.8.1",
+    "prettier": "^2.7.1"
+  },
+  "engines": {
+    "node": ">=8.3.0"
+  }
+}

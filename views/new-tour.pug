@@ -1,0 +1,63 @@
+extends base
+
+block content
+    main.main
+        .auth-form
+            h2.heading-secondary.ma-bt-lg Add a New Tour
+            form.form-add-tour
+                .form__group
+                    label.form__label(for='name') Tour Name
+                    input#name.form__input(type='text', name='name', placeholder='Tour name')
+                .form__group
+                    label.form__label(for='duration') Duration (days)
+                    input#duration.form__input(type='number', name='duration', placeholder='Number of days')
+                .form__group
+                    label.form__label(for='maxGroupSize') Max Group Size
+                    input#maxGroupSize.form__input(type='number', name='maxGroupSize', placeholder='Max group size')
+                .form__group
+                    label.form__label(for='difficulty') Difficulty
+                    select#difficulty.form__input(name='difficulty')
+                        option(value='easy') Easy
+                        option(value='medium') Medium
+                        option(value='difficult') Difficult
+                .form__group
+                    label.form__label(for='price') Price
+                    input#price.form__input(type='number', name='price', placeholder='Price in USD')
+                .form__group
+                    label.form__label(for='priceDiscount') Discount Price (optional)
+                    input#priceDiscount.form__input(type='number', name='priceDiscount', placeholder='Discount price in USD')
+                .form__group
+                    label.form__label(for='summary') Summary
+                    textarea#summary.form__input(name='summary', placeholder='Short description of the tour')
+                .form__group
+                    label.form__label(for='description') Detailed Description
+                    textarea#description.form__input(name='description', placeholder='Detailed description of the tour')
+                .form__group
+                    label.form__label(for="imageCover") Cover Image
+                    input#imageCover.form__input(type="file", name="imageCover", accept='image/*')
+                .form__group
+                    label.form__label(for="image1") Image 1
+                    input#image1.form__input(type="file", name="image1", accept='image/*')
+                .form__group
+                    label.form__label(for="image2") Image 2
+                    input#image2.form__input(type="file", name="image2", accept='image/*')
+                .form__group
+                    label.form__label(for="image3") Image 3
+                    input#image3.form__input(type="file", name="image3", accept='image/*')
+                .form__group
+                    label.form__label(for='startDates') Start Dates (comma separated)
+                    input#startDates.form__input(type='text', name='startDates', placeholder='Comma separated start dates (e.g., YYYY-MM-DD)')
+                .form__group
+                    label.form__label(for='startLocationDescription') Start Location Description
+                    input#startLocationDescription.form__input(type='text', name='startLocationDescription', placeholder='Description of the starting location')
+                .form__group
+                    label.form__label(for='startLocationCoordinates') Start Location Coordinates
+                    input#startLocationCoordinates.form__input(type='text', name='startLocationCoordinates', placeholder='Comma separated coordinates (e.g., longitude,latitude)')
+                .form__group
+                    label.form__label(for='locations') Additional Locations (comma separated)
+                    input#locations.form__input(type='text', name='locations', placeholder='Comma separated locations (e.g., coordinates and description)')
+                .form__group
+                    #map-container(style='height: 400px;') Map
+                .form__group.sign
+                    button.btn.btn--green(type='submit') Add Tour
+                    button.btn.btn--black(type='reset') Reset

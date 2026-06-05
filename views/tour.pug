@@ -1,0 +1,97 @@
+extends base
+include _mixins
+
+block append head
+    link(href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" ,rel="stylesheet" crossorigin="anonymous" )
+    script(src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js" crossorigin="anonymous" )
+
+
+block content
+    section.section-header
+        .header__hero
+            .header__hero-overlay &nbsp;
+            img.header__hero-img(src=`/img/tours/${tour.imageCover}`, alt=tour.name)
+
+        .heading-box
+            h1.heading-primary
+                span.tour-id(data-id=`${tour.id}`) #{tour.name} tour
+            .heading-box__group
+                .heading-box__detail
+                    svg.heading-box__icon
+                        use(xlink:href="/img/icons.svg#icon-clock")
+                    span.heading-box__text #{tour.duration} days
+                .heading-box__detail
+                    svg.heading-box__icon
+                        use(xlink:href="/img/icons.svg#icon-map-pin")
+                    span.heading-box__text=tour.startLocation.description
+
+    section.section-description
+        .overview-box
+            div
+                .overview-box__group
+                    h2.heading-secondary.ma-bt-lg Quick facts
+                    -const date=tour.startDates[0].toLocaleString('en-us',{month:'long',year:'numeric'});
+                    +overviewBox('Next date','calendar',date)
+                    +overviewBox('Difficulty','trending-up',tour.difficulty)
+                    +overviewBox('Participants','user',`${tour.maxGroupSize} People`)
+                    +overviewBox('Rating','star',`${tour.ratingsAverage} / 5`)
+                .overview-box__group
+                    h2.heading-secondary.ma-bt-lg Your tour guides
+                    each guide in tour.guides
+                        .overview-box__detail
+                            img.overview-box__img(src=`/img/users/${guide.photo}`,alt=`${guide.name}`)
+
+                            - if(guide.role==='lead-guide')
+                                span.overview-box__label Lead guide
+                            - if(guide.role==='guide')
+                                span.overview-box__label Tour guide
+
+                            span.overview-box__text=guide.name
+        - const paragraphs = tour.description.split('\n');
+        .description-box
+            h2.heading-secondary.ma-bt-lg=`About ${tour.name} tour`
+            each p in paragraphs
+                p.description__text=p
+
+    section.section-pictures
+        each im, i in tour.images    
+            .picture-box
+                img.picture-box__img(
+                    src=`/img/tours/${im}`,
+                    alt=`${tour.name} Tour ${i+1}`,
+                    class=`picture-box__img--${i+1}`)
+    section.section-map 
+        #map(data-locations=`${JSON.stringify(tour.locations)}`)
+
+    section.section-reviews
+        .reviews
+            each review in tour.reviews
+                +reviewCard(review)
+    section.add-review
+        .write-review
+            h2.heading-secondary.ma-bt-lg.head2  Write a review
+            form.review-form
+                .form__group
+                    .reviews__rating
+                        each star in [1,2,3,4,5]
+                            svg.reviews__star.star(data-num=`${star}`)
+                                use(xlink:href="/img/icons.svg#icon-star")
+                .form__group
+                    input#review-input.form__input(type='text',name='review', placeholder='write a review', required)
+                .form__group
+                    button.btn.btn--green.save Add
+
+    section.section-cta
+        .cta
+            .cta__img.cta__img--logo
+                img(src="/img/logo-white.png" alt="Natours logo")
+            img(src=`/img/tours/${tour.images[0]}` alt="" class="cta__img cta__img--1")
+            img(src=`/img/tours/${tour.images[1]}` alt="" class="cta__img cta__img--2")
+
+            .cta__content
+                h2.heading-secondary What are you waiting for?
+                p.cta__text #{tour.duration} days. 1 adventure. Infinite memories. Make it yours today!
+                if user
+                    button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`) Book tour now!
+                else
+                    a.btn.btn--green.span-all-rows(href='/login') Log in to book tour

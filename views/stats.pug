@@ -1,0 +1,25 @@
+extends base
+include _mixins
+
+block content
+    section.section-stats
+        .stats-container
+            h2.heading-secondary Tour Statistics
+            each stat in stats
+                .stats-card
+                    h3= stat._id.charAt(0).toUpperCase() + stat._id.slice(1)
+                    p
+                        strong Number of Tours: 
+                        | #{stat.numTours}
+                    p
+                        strong Number of Ratings: 
+                        | #{stat.numRatings}
+                    p
+                        strong Average Rating: 
+                        | #{stat.avgRating.toFixed(2)}
+                    p
+                        strong Average Price: 
+                        | $#{stat.avgPrice.toFixed(2)}
+                    p
+                        strong Price Range: 
+                        | $#{stat.minPrice} - $#{stat.maxPrice}

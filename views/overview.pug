@@ -1,0 +1,53 @@
+extends base    
+
+block content
+    main.main
+        .card-container
+            each tour in tours
+                .card(data-id=`${tour.id}`)
+                    .card__header
+                        -if(user && user.role==='admin')
+                            .tours__more--btn 
+                                svg.tours__more.tours__more--inactive
+                                    use(xlink:href="/img/icons.svg#icon-more-vertical")
+                            .tours__options
+                                .tours__delete--btn Delete
+                        .card__picture
+                            .card__picture-overlay &nbsp;
+                            img.card__picture-img(src=`/img/tours/${tour.imageCover}`, alt=`${tour.name}`)
+                        .heading-tertiary
+                            span=tour.name
+                    .card__details
+                        .card__sub-heading #{tour.difficulty} #{tour.duration}-day tour
+                        p.card__text=tour.summary
+                        .card__data
+                            svg.card__icon
+                                use(xlink:href="/img/icons.svg#icon-map-pin")
+                            span #{tour.startLocation.description}
+                        .card__data
+                            svg.card__icon
+                                use(xlink:href="/img/icons.svg#icon-calendar")
+                            span=tour.startDates[0].toLocaleString('en-us', { month: 'long', year: 'numeric' })
+                        .card__data
+                            svg.card__icon
+                                use(xlink:href="/img/icons.svg#icon-flag")
+                            span #{tour.locations.length} stops
+                        .card__data
+                            svg.card__icon
+                                use(xlink:href="/img/icons.svg#icon-user")
+                            span #{tour.maxGroupSize} people
+                    .card__footer
+                        p
+                            span.card__footer-value $#{tour.price}
+                            | 
+                            span.card__footer-text per person
+                        p.card__ratings
+                            span.card__footer-value #{tour.ratingsAverage}
+                            | 
+                            span.card__footer-text rating (#{tour.ratingsQuantity})
+                        a(href=`/tour/${tour.slug}` class="btn btn--green btn--small") Details
+
+        //- Add a fixed button to navigate to the tour stats page
+        if user && user.role==='admin'
+            .fixed-btn-container
+                a(href="/new-tour" class="btn btn--blue btn--large") Add Tour
