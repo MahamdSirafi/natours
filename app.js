@@ -6,7 +6,6 @@ import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import cookieParser from 'cookie-parser';
-import xss from 'xss-clean';
 import cors from 'cors';
 import hpp from 'hpp';
 import compression from 'compression';
@@ -101,9 +100,6 @@ app.use(cookieParser());
 
 //Data sanitization against NoSql query injection like email:{$gt:""}
 app.use(mongoSanitize());
-
-//Data sanitization against XSS like send html with some js in any param or...
-app.use(xss());
 
 //Prevent http params pollution
 app.use(

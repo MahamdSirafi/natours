@@ -1,8 +1,8 @@
 ﻿import { config } from 'dotenv';
 import mongoose from 'mongoose';
-import tours from './tours.json' assert { type: 'json' };
-import users from './users.json' assert { type: 'json' };
-import reviews from './reviews.json' assert { type: 'json' };
+import tours from './tours.json' with { type: 'json' };
+import users from './users.json' with { type: 'json' };
+import reviews from './reviews.json' with { type: 'json' };
 import Tour from '../../models/tourModel.js';
 import User from '../../models/userModel.js';
 import Review from '../../models/reviewModel.js';
