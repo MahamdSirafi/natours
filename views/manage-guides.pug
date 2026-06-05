@@ -1,0 +1,34 @@
+extends base
+
+block content
+    main.main
+        .auth-form
+            h2.heading-secondary.ma-bt-lg Manage Guides
+            .manage-guides
+                .form__group
+                    h3(style='font-size:1.6rem;margin-bottom:1rem;') Add New Guide
+                    form#form-add-guide
+                        .form__group
+                            label.form__label(for='guide-name') Name
+                            input#guide-name.form__input(type='text', name='name', placeholder='Guide name', required)
+                        .form__group
+                            label.form__label(for='guide-email') Email
+                            input#guide-email.form__input(type='email', name='email', placeholder='guide@example.com', required)
+                        .form__group
+                            label.form__label(for='guide-password') Password
+                            input#guide-password.form__input(type='password', name='password', placeholder='Password', required)
+                        .form__group
+                            label.form__label(for='guide-passwordConfirm') Confirm Password
+                            input#guide-passwordConfirm.form__input(type='password', name='passwordConfirm', placeholder='Confirm password', required)
+                        .form__group
+                            label.form__label(for='guide-role') Role
+                            select#guide-role.form__input(name='role')
+                                option(value='guide') Guide
+                                option(value='lead-guide') Lead Guide
+                        button.btn.btn--green(type='submit') Add Guide
+                hr(style='margin:2rem 0;border-color:#eee;')
+                .form__group
+                    h3(style='font-size:1.6rem;margin-bottom:1rem;') All Guides
+                    #guides-table
+                        p.loading Loading guides...
+    script(src='/manageGuides.bundle.js')

@@ -18,7 +18,6 @@ const updateUserDataFrom = document.querySelector('.form-user-data');
 const updateUserPasswordForm = document.querySelector('.form-user-settings');
 const reviewForm = document.querySelector('.review-form');
 const reviewMores = document.querySelectorAll('.reviews__more');
-const tourMores = document.querySelectorAll('.tours__more');
 const reviewEditForms = document.querySelectorAll('.reviews__edit__form');
 const forgotPasswordForm = document.querySelector('.form-forget');
 const resetPasswordForm = document.querySelector('.form-reset');
@@ -346,36 +345,16 @@ if (reviewMores) {
   });
 }
 
-if (tourMores) {
-  tourMores.forEach((tourMore) => {
-    tourMore.addEventListener('click', () => {
-      const toursOption =
-        tourMore.parentElement.parentElement.querySelector('.tours__options');
-      toursOption.classList.add('active');
-
-      const tourCard = toursOption.parentElement.parentElement;
-      const deleteBtn = toursOption.querySelector('.tours__delete--btn');
-      const tourId =
-        toursOption.parentElement.parentElement.getAttribute('data-id');
-
-      document.addEventListener('click', (e) => {
-        if (
-          !e.target.classList.contains('tours__options') &&
-          !e.target.classList.contains('tours__more') &&
-          !e.target.classList.contains('tours__delete--btn')
-        ) {
-          toursOption.classList.remove('active');
-        }
-      });
-
-      deleteBtn.addEventListener('click', () => {
-        deleteTour(tourId);
-        toursOption.classList.remove('active');
-        tourCard.remove();
-      });
-    });
+document.querySelectorAll('.btn--delete-tour').forEach((btn) => {
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const tourCard = btn.closest('.card');
+    const tourId = btn.dataset.id;
+    if (!confirm('Delete this tour permanently?')) return;
+    await deleteTour(tourId);
+    if (tourCard) tourCard.remove();
   });
-}
+});
 
 const alert = document.body.dataset.alert;
 if (alert) {

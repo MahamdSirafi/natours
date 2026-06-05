@@ -6,15 +6,11 @@ block content
             each tour in tours
                 .card(data-id=`${tour.id}`)
                     .card__header
-                        -if(user && user.role==='admin')
-                            .tours__more--btn 
-                                svg.tours__more.tours__more--inactive
-                                    use(xlink:href="/img/icons.svg#icon-more-vertical")
-                            .tours__options
-                                .tours__delete--btn Delete
                         .card__picture
                             .card__picture-overlay &nbsp;
                             img.card__picture-img(src=`/img/tours/${tour.imageCover}`, alt=`${tour.name}`)
+                            -if(user && user.role==='admin')
+                                button.btn--delete-tour(type='button', data-id=`${tour.id}`, title='Delete tour') &#x2715;
                         .heading-tertiary
                             span=tour.name
                     .card__details

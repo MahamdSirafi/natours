@@ -38743,13 +38743,12 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   // public/js/tour.js
   var addTour = (body) => __async(null, null, function* () {
     try {
-      const res = yield axios_default({
+      const res = yield fetch("/api/v1/tours", {
         method: "POST",
-        url: "/api/v1/tours",
-        // Adjust the API endpoint as needed
-        data: body
+        body
       });
-      if (res.data.status === "success") {
+      const json = yield res.json();
+      if (res.ok && json.status === "success") {
         cuteToast({
           type: "success",
           title: "Success",
@@ -38758,23 +38757,21 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         }).then(() => {
           location.assign("/");
         });
+      } else {
+        throw new Error(json.message || "Failed to add tour");
       }
     } catch (err) {
       cuteToast({
         type: "error",
         title: "Error",
-        message: err.response.data.message,
+        message: err.message,
         timer: 2500
       });
     }
   });
   var deleteTour = (id2) => __async(null, null, function* () {
     try {
-      const res = yield axios_default({
-        method: "DELETE",
-        url: `/api/v1/tours/${id2}`,
-        data: {}
-      });
+      const res = yield fetch(`/api/v1/tours/${id2}`, { method: "DELETE" });
       if (res.status === 204) {
         cuteToast({
           type: "success",
@@ -38782,12 +38779,15 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
           message: "Tour deleted",
           timer: 1e3
         });
+      } else {
+        const json = yield res.json();
+        throw new Error(json.message || "Failed to delete tour");
       }
     } catch (err) {
       cuteToast({
         type: "error",
         title: "Error",
-        message: err.response.data.message,
+        message: err.message,
         timer: 2e3
       });
     }
@@ -38803,7 +38803,6 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   var updateUserPasswordForm = document.querySelector(".form-user-settings");
   var reviewForm = document.querySelector(".review-form");
   var reviewMores = document.querySelectorAll(".reviews__more");
-  var tourMores = document.querySelectorAll(".tours__more");
   var reviewEditForms = document.querySelectorAll(".reviews__edit__form");
   var forgotPasswordForm = document.querySelector(".form-forget");
   var resetPasswordForm = document.querySelector(".form-reset");
@@ -39085,27 +39084,16 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       });
     });
   }
-  if (tourMores) {
-    tourMores.forEach((tourMore) => {
-      tourMore.addEventListener("click", () => {
-        const toursOption = tourMore.parentElement.parentElement.querySelector(".tours__options");
-        toursOption.classList.add("active");
-        const tourCard = toursOption.parentElement.parentElement;
-        const deleteBtn = toursOption.querySelector(".tours__delete--btn");
-        const tourId = toursOption.parentElement.parentElement.getAttribute("data-id");
-        document.addEventListener("click", (e) => {
-          if (!e.target.classList.contains("tours__options") && !e.target.classList.contains("tours__more") && !e.target.classList.contains("tours__delete--btn")) {
-            toursOption.classList.remove("active");
-          }
-        });
-        deleteBtn.addEventListener("click", () => {
-          deleteTour(tourId);
-          toursOption.classList.remove("active");
-          tourCard.remove();
-        });
-      });
-    });
-  }
+  document.querySelectorAll(".btn--delete-tour").forEach((btn) => {
+    btn.addEventListener("click", (e) => __async(null, null, function* () {
+      e.stopPropagation();
+      const tourCard = btn.closest(".card");
+      const tourId = btn.dataset.id;
+      if (!confirm("Delete this tour permanently?")) return;
+      yield deleteTour(tourId);
+      if (tourCard) tourCard.remove();
+    }));
+  });
   var alert = document.body.dataset.alert;
   if (alert) {
     cuteToast({

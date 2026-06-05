@@ -1149,6 +1149,34 @@ body {
   height: 100%;
   width: 100%;
 }
+.btn--delete-tour {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background 0.2s;
+}
+.btn--delete-tour:hover {
+  background: rgba(200, 0, 0, 0.8);
+}
 .card__details {
   display: grid;
   grid-template-columns: 1fr 1fr;

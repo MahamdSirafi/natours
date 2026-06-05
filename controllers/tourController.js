@@ -1,6 +1,7 @@
 ﻿import multer from 'multer';
 import sharp from 'sharp';
 import Tour from '../models/tourModel.js';
+import Booking from '../models/bookingModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 import {
@@ -108,7 +109,29 @@ export const createTour = createOne(Tour);
 
 export const updateTour = updateOne(Tour);
 
-export const deleteTour = deleteOne(Tour);
+export const deleteTour = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findById(req.params.id);
+  if (!tour) return next(new AppError(404, 'No tour found with that ID'));
+
+  const bookings = await Booking.find({ tour: tour._id });
+  const hasFutureDates = tour.startDates.some((d) => new Date(d) > new Date());
+
+  if (bookings.length > 0 && hasFutureDates) {
+    return next(
+      new AppError(
+        400,
+        'Cannot delete this tour. It has active bookings and future start dates. Wait until all dates pass or cancel bookings first.'
+      )
+    );
+  }
+
+  if (bookings.length > 0) {
+    await Booking.deleteMany({ tour: tour._id });
+  }
+
+  await Tour.findByIdAndDelete(req.params.id);
+  res.status(204).send({ status: 'success', data: null });
+});
 
 //NOTE stats
 export const getTourStats = catchAsync(async (req, res, next) => {

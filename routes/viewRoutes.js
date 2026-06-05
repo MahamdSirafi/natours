@@ -12,6 +12,7 @@ import {
   alerts,
   getTourStats,
   getTourForm,
+  getManageGuides,
 } from '../controllers/viewController.js';
 import { aliasTopTours } from '../controllers/tourController.js';
 
@@ -34,6 +35,7 @@ router.get('/top-5-cheap', aliasTopTours, getOverview);
 router.get('/tour-stats', getTourStats);
 
 router.get('/new-tour', protect, getTourForm);
+router.get('/manage-guides', protect, getManageGuides);
 
 router.get('/login', getLoginForm);
 

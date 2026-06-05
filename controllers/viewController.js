@@ -71,6 +71,10 @@ export const getTourForm = catchAsync(async (req, res) => {
   res.status(200).render('new-tour', { title: 'Create new tour' });
 });
 
+export const getManageGuides = catchAsync(async (req, res) => {
+  res.status(200).render('manage-guides', { title: 'Manage Guides' });
+});
+
 export const getSignupForm = catchAsync(async (req, res) => {
   res.status(200).render('signup', { title: 'Create your account' });
 });

@@ -21,6 +21,9 @@ import {
   uploadUserPhoto,
   resizeUserImage,
   getGuides,
+  createGuide,
+  updateGuide,
+  deleteGuide,
 } from '../controllers/userController.js';
 import bookingRouter from './bookingRoutes.js';
 
@@ -46,6 +49,8 @@ router.route('/deleteMe').delete(deleteMe);
 router.use(restrictTo('admin'));
 
 router.route('/').get(getAllUsers);
+router.route('/guides').post(createGuide);
+router.route('/guides/:id').patch(updateGuide).delete(deleteGuide);
 router.route('/:id').get(getUser).delete(deleteUser).patch(updateUser);
 
 export default router;

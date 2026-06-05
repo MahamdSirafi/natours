@@ -91,3 +91,33 @@ export const getGuides = catchAsync(async (req, res, next) => {
   }).select('name email role photo');
   res.status(200).json({ status: 'success', data: { data: guides } });
 });
+
+export const createGuide = catchAsync(async (req, res, next) => {
+  const { name, email, password, passwordConfirm, role } = req.body;
+  if (!['guide', 'lead-guide'].includes(role)) {
+    return next(new AppError(400, 'Role must be guide or lead-guide'));
+  }
+  const newGuide = await User.create({ name, email, password, passwordConfirm, role });
+  newGuide.password = undefined;
+  res.status(201).json({ status: 'success', data: { data: newGuide } });
+});
+
+export const updateGuide = catchAsync(async (req, res, next) => {
+  const { name, email, role } = req.body;
+  if (role && !['guide', 'lead-guide'].includes(role)) {
+    return next(new AppError(400, 'Role must be guide or lead-guide'));
+  }
+  const guide = await User.findByIdAndUpdate(
+    req.params.id,
+    { name, email, role },
+    { new: true, runValidators: true }
+  ).select('name email role photo');
+  if (!guide) return next(new AppError(404, 'No guide found with that ID'));
+  res.status(200).json({ status: 'success', data: { data: guide } });
+});
+
+export const deleteGuide = catchAsync(async (req, res, next) => {
+  const guide = await User.findByIdAndDelete(req.params.id);
+  if (!guide) return next(new AppError(404, 'No guide found with that ID'));
+  res.status(204).json({ status: 'success', data: null });
+});
