@@ -1,26 +1,16 @@
 ﻿import { config } from 'dotenv';
 import mongoose from 'mongoose';
-import tours from './tours.json' with { type: 'json' };
-import users from './users.json' with { type: 'json' };
-import reviews from './reviews.json' with { type: 'json' };
+import Review from '../../models/reviewModel.js';
 import Tour from '../../models/tourModel.js';
 import User from '../../models/userModel.js';
-import Review from '../../models/reviewModel.js';
+import reviews from './reviews.json' with { type: 'json' };
+import tours from './tours.json' with { type: 'json' };
+import users from './users.json' with { type: 'json' };
 
 config();
-const DB =
-  process.env.NODE_ENV === 'production'
-    ? process.env.DATABASE.replace('<PASSWORD>', process.env.PASSWORD)
-    : process.env.DB;
+const DB = process.env.DB;
 
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log('DB connection successes'));
+mongoose.connect(DB).then(() => console.log('DB connection successes'));
 
 const importData = async () => {
   try {

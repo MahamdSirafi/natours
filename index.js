@@ -1,19 +1,15 @@
 ﻿import mongoose from 'mongoose';
 import app from './app.js';
 import './utils/unCaughtException.js';
-const DB =
-  process.env.NODE_ENV === 'production'
-    ? process.env.DATABASE.replace('<PASSWORD>', process.env.PASSWORD)
-    : process.env.DB;
+
+const { DB } = process.env;
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
     useUnifiedTopology: true,
   })
   .then(() => console.log('DB connection succeeded'))
-  .catch(() => console.log('Mongo connection error'));
+  .catch((err) => console.log('Mongo connection error', err));
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () =>
   console.log(`Example app listening on port ${port}!`)

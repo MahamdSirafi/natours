@@ -9,7 +9,6 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import hpp from 'hpp';
 import compression from 'compression';
-// import csurf from 'csurf';
 import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import reviewRouter from './routes/reviewRoutes.js';
@@ -22,7 +21,6 @@ import { webhookCheckout } from './controllers/bookingController.js';
 const app = express();
 
 export const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// const csrfProtection = csurf({ cookie: true });
 
 //PUG
 app.set('view engine', 'pug');
